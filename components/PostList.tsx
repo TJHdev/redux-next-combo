@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Post } from "./PostItem";
+import { type Post } from "./PostItem";
+import { useState } from "react";
 
 // make this call initially
 // https://dummyjson.com/comments?limit=10&sortBy=id&order=desc
@@ -84,16 +85,59 @@ const mockPosts = {
   limit: 10,
 };
 
-// export const PostList = ({posts  }: {posts: Post[]}) => {
 export const PostList = () => {
+  const [post, setPost] = useState<Post | undefined>();
   const posts = mockPosts.comments;
 
+  if (post) {
+    return (
+      <div className="max-w-xl mx-auto mb-6 px-4">
+        <div
+          key={post.id}
+          className="relative bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 px-4"
+        >
+          <Image
+            onClick={() => setPost(undefined)}
+            src={"/back.svg"}
+            width={50}
+            height={50}
+            alt="back icon"
+            className="cursor-pointer absolute top-2 left-2"
+          />
+
+          <div className="flex flex-col justify-center items-center gap-4 w-100 ">
+            <Image
+              alt="User image"
+              src={`https://robohash.org/${post.id}`}
+              width={150}
+              height={150}
+              className="border max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
+            />
+            <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
+              {post.user.fullName}
+            </h2>
+            <div>
+              <p className="text-gray-600">
+                {post.body} {` `}
+                {post.body} {` `}
+                {post.body} {` `}
+                {post.body} {` `}
+                {post.body}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-xl mx-auto mb-6 px-4 ">
+    <div className="max-w-xl mx-auto mb-6 px-4">
       <h1 className="text-3xl font-bold mb-2">Recent Posts</h1>
       <div className="gap-2">
         {posts.map((post) => (
           <div
+            onClick={() => setPost(post)}
             key={post.id}
             className="flex flex-wrap row bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 hover:transition-all hover:border-orange-500 cursor-pointer"
           >
