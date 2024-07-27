@@ -1,11 +1,139 @@
-import Image from "next/image";
-import { type Post } from "./PostItem";
-import { useState } from "react";
+import {
+  fetchPosts,
+  setSinglePost,
+  resetNewHighlighted,
+  type Post,
+} from "@/reducer/postsSlice";
+import { useEffect } from "react";
+import { PostListItem } from "./PostListItem";
+import { PostSingleItem } from "./PostSingleItem";
+import { useElementOnScreen } from "@/hooks/useElementOnScreen";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // make this call initially
 // https://dummyjson.com/comments?limit=10&sortBy=id&order=desc
 // make this call as a follow up for adding to the top
 // https://dummyjson.com/comments?limit=10&skip=250&sortBy=id&order=asc
+
+import { configureStore } from "@reduxjs/toolkit";
+import postsReducer from "@/reducer/postsSlice";
+import { Provider, useDispatch, useSelector } from "react-redux";
+
+export const store = configureStore({
+  reducer: {
+    posts: postsReducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+const _PostList = () => {
+  const [containerRef, isVisible] = useElementOnScreen({
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0,
+  });
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const {
+    singlePost,
+    items: posts,
+    status,
+    error,
+    total,
+    newHighlighted,
+  } = useSelector((state: RootState) => state.posts);
+
+  const canFetchMore = !!posts.length && posts.length !== total;
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchPosts("initial"));
+    }
+  }, [status, dispatch]);
+
+  useEffect(() => {
+    if (isVisible) {
+      dispatch(fetchPosts("nextPage"));
+    }
+  }, [dispatch, isVisible]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(resetNewHighlighted(newHighlighted));
+    }, 5000);
+  }, [newHighlighted]);
+
+  const setPost = (post: Post | undefined) => {
+    dispatch(setSinglePost(post));
+  };
+
+  if (status === "loading") {
+    return (
+      <div className="absolute left-0 top-0 h-full w-full flex justify-center items-center h-screen mx-auto">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
+
+  if (singlePost) {
+    return <PostSingleItem post={singlePost} setPost={setPost} />;
+  }
+
+  return (
+    <div className="max-w-xl mx-auto mb-6 px-4 w-full">
+      <h1 className="text-3xl font-bold mb-2">Recent Posts</h1>
+      <div className="gap-2">
+        {posts.map((post) => (
+          <PostListItem
+            key={post.id}
+            highlighted={newHighlighted[post.id]}
+            post={post}
+            setPost={setPost}
+          />
+        ))}
+        {canFetchMore && (
+          <div
+            ref={containerRef}
+            className="flex justify-center items-center min-h-32"
+          >
+            {status === "fetching" ? <LoadingSpinner /> : <div />}
+          </div>
+        )}
+      </div>
+      <button
+        onClick={() => {
+          dispatch(fetchPosts("new"));
+        }}
+        aria-label="add new post"
+        className="fixed bottom-2 right-2 px-4 py-2 rounded-full text-white bg-orange-500 hover:bg-orange-800 leading-xs pb-[10px]"
+      >
+        +
+      </button>
+    </div>
+  );
+};
+
+export const PostList = () => {
+  return (
+    <Provider store={store}>
+      <_PostList />
+    </Provider>
+  );
+};
+
+// export const getInitialProps = wrapper.getServerSideProps(
+//   (store) => async (context) => {
+//     await store.dispatch(fetchPosts());
+//     return { props: {} };
+//   }
+// );
 
 const mockPosts = {
   comments: [
@@ -83,91 +211,4 @@ const mockPosts = {
   total: 340,
   skip: 0,
   limit: 10,
-};
-
-export const PostList = () => {
-  const [post, setPost] = useState<Post | undefined>();
-  const posts = mockPosts.comments;
-
-  if (post) {
-    return (
-      <div className="max-w-xl mx-auto mb-6 px-4">
-        <div
-          key={post.id}
-          className="relative bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 px-4"
-        >
-          <Image
-            onClick={() => setPost(undefined)}
-            src={"/back.svg"}
-            width={50}
-            height={50}
-            alt="back icon"
-            className="cursor-pointer absolute top-2 left-2"
-          />
-
-          <div className="flex flex-col justify-center items-center gap-4 w-100 ">
-            <Image
-              alt="User image"
-              src={`https://robohash.org/${post.id}`}
-              width={150}
-              height={150}
-              className="border max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
-            />
-            <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
-              {post.user.fullName}
-            </h2>
-            <div>
-              <p className="text-gray-600">
-                {post.body} {` `}
-                {post.body} {` `}
-                {post.body} {` `}
-                {post.body} {` `}
-                {post.body}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="max-w-xl mx-auto mb-6 px-4">
-      <h1 className="text-3xl font-bold mb-2">Recent Posts</h1>
-      <div className="gap-2">
-        {posts.map((post) => (
-          <div
-            onClick={() => setPost(post)}
-            key={post.id}
-            className="flex flex-wrap row bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 hover:transition-all hover:border-orange-500 cursor-pointer"
-          >
-            <div className="flex justify-start items-center gap-4 w-100 ">
-              <Image
-                alt="User image"
-                src={`https://robohash.org/${post.id}`}
-                width={150}
-                height={150}
-                className="border max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
-              />
-              <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
-                {post.user.fullName}
-              </h2>
-            </div>
-            <div className="flex justify-start items-center sm:gap-4 gap-0 w-100">
-              <div className="min-w-[0px] sm:min-w-[150px]"></div>
-              <div>
-                <p className="text-gray-600  overflow-hidden line-clamp-3">
-                  {post.body} {` `}
-                  {post.body} {` `}
-                  {post.body} {` `}
-                  {post.body} {` `}
-                  {post.body}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 };
