@@ -23,7 +23,7 @@ export const PostListItem = ({
     >
       <div className="flex justify-start items-center gap-4 w-100 ">
         <Image
-          alt="User image"
+          alt="User-image"
           src={`https://robohash.org/${post.userId}`}
           width={150}
           height={150}

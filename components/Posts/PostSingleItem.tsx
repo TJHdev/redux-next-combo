@@ -11,10 +11,11 @@ export const PostSingleItem = ({
   return (
     <div className="max-w-xl mx-auto mb-6 px-4 w-full">
       <div className="relative bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 px-4">
-        <div
+        <button
+          aria-label="back"
           onClick={() => setPost(undefined)}
           className="cursor-pointer absolute top-2 left-2 text-orange-500 text-[30px] leading-tight w-[40px] px-2"
-        >{`<`}</div>
+        >{`<`}</button>
 
         <div className="flex flex-col justify-center items-center gap-4 w-100 ">
           <Image

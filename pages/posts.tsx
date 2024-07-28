@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { NavBar } from "../components/NavBar";
-import { PostList } from "@/components/PostList";
+import { PostList } from "@/components/Posts/PostList";
 
 const inter = Inter({ subsets: ["latin"] });
 

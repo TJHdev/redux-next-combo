@@ -1,4 +1,4 @@
-import { RootState } from "@/components/PostList";
+import { RootState } from "@/components/Posts/PostList";
 import { haveSameKeys } from "@/helpers/haveSameKeys";
 import { type Post, type PostResponse, postsApi } from "@/service/posts";
 

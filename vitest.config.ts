@@ -10,6 +10,7 @@ export default defineConfig({
     },
     setupFiles: ["./vitest-setup.js"],
 
+    isolate: true,
     // isolate: true,
 
     // poolOptions: {
