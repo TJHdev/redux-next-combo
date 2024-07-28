@@ -12,7 +12,7 @@ Note: To simulate the real time messages triggered by the server, I've hooked up
 To run the e2e tests:
 
 ```
-npx install playwright
+npx playwright install
 npm run e2e
 or
 npm run e2e:ui  (to view the tests as they're running)
