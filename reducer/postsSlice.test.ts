@@ -9,9 +9,10 @@ import { type Post } from "@/service/posts";
 import { configureStore } from "@reduxjs/toolkit";
 
 const initialState: PostsState = {
+  singlePost: undefined,
+  previousScrollPosition: 0,
   newHighlighted: {},
   numberOfRequests: 0,
-  singlePost: undefined,
   items: [],
   total: undefined,
   lastSkip: undefined,
@@ -33,7 +34,10 @@ test("should handle setSinglePost", () => {
     views: 0,
     userId: 1,
   };
-  const actual = postsReducer(initialState, setSinglePost(samplePost));
+  const actual = postsReducer(
+    initialState,
+    setSinglePost({ post: samplePost, previousScrollPosition: 0 })
+  );
   expect(actual.singlePost).toEqual(samplePost);
   expect(actual.newHighlighted).toEqual({});
 });

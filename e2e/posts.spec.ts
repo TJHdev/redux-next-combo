@@ -6,10 +6,13 @@ test("Navigate to feed page and verify content", async ({ page }) => {
   await expect(page.getByText("click the Feed link above to")).toBeVisible();
   await page.getByRole("link", { name: "Feed" }).click();
 
-  await expect(page.getByRole("progressbar")).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Recent Posts" })
-  ).toBeVisible();
+  await Promise.all([
+    await expect(page.getByRole("progressbar")).toBeVisible(),
+    await expect(
+      page.getByRole("heading", { name: "Recent Posts" })
+    ).toBeVisible(),
+  ]);
+
   await expect(page.getByRole("heading", { name: "Robot 251" })).toBeVisible();
   await expect(page.getByText("Its waters cascading in a")).toBeVisible();
   await page.getByRole("heading", { name: "Robot 251" }).click();
@@ -28,10 +31,12 @@ test("Infinte scroll", async ({ page }) => {
   await expect(page.getByText("click the Feed link above to")).toBeVisible();
   await page.getByRole("link", { name: "Feed" }).click();
 
-  await expect(page.getByRole("progressbar")).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Recent Posts" })
-  ).toBeVisible();
+  await Promise.all([
+    await expect(page.getByRole("progressbar")).toBeVisible(),
+    await expect(
+      page.getByRole("heading", { name: "Recent Posts" })
+    ).toBeVisible(),
+  ]);
 
   await expect(page.getByRole("heading", { name: "Robot 251" })).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -51,10 +56,12 @@ test("Simulate real time message", async ({ page }) => {
   await expect(page.getByText("click the Feed link above to")).toBeVisible();
   await page.getByRole("link", { name: "Feed" }).click();
 
-  await expect(page.getByRole("progressbar")).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Recent Posts" })
-  ).toBeVisible();
+  await Promise.all([
+    await expect(page.getByRole("progressbar")).toBeVisible(),
+    await expect(
+      page.getByRole("heading", { name: "Recent Posts" })
+    ).toBeVisible(),
+  ]);
 
   await expect(page.getByRole("heading", { name: "Robot 251" })).toBeVisible();
   await page.getByLabel("add new post").click();
@@ -69,12 +76,11 @@ test("Simulate real time message", async ({ page }) => {
 });
 
 test("Mock API response with error", async ({ page }) => {
-  // await page.route("https://dummyjson.com/posts", async (route) => {
   await page.route(
     "https://dummyjson.com/posts?limit=20&skip=0&sortBy=id&order=desc&delay=1000",
     async (route) => {
       setTimeout(async () => {
-        const thing = await route.fulfill({
+        return await route.fulfill({
           status: 500,
           contentType: "application/json",
           body: JSON.stringify({
@@ -83,7 +89,6 @@ test("Mock API response with error", async ({ page }) => {
             code: 500,
           }),
         });
-        return thing;
       }, 1000);
     }
   );
@@ -93,6 +98,8 @@ test("Mock API response with error", async ({ page }) => {
   await expect(page.getByText("click the Feed link above to")).toBeVisible();
   await page.getByRole("link", { name: "Feed" }).click();
 
-  await expect(page.getByRole("progressbar")).toBeVisible();
-  await expect(page.getByText("Error: Failed to fetch posts.")).toBeVisible();
+  await Promise.all([
+    await expect(page.getByRole("progressbar")).toBeVisible(),
+    await expect(page.getByText("Error: Failed to fetch posts.")).toBeVisible(),
+  ]);
 });

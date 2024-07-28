@@ -33,5 +33,8 @@ test("calls setPost function when clicked", () => {
   );
 
   fireEvent.click(screen.getByText(`Robot ${mockPost.id}`));
-  expect(mockSetPost).toHaveBeenCalledWith(mockPost);
+  expect(mockSetPost).toHaveBeenCalledWith({
+    post: mockPost,
+    previousScrollPosition: 0,
+  });
 });

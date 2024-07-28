@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export const useElementOnScreen = (options?: IntersectionObserverInit) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {

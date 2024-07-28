@@ -29,5 +29,5 @@ test("calls setPost function when clicked", () => {
   render(<PostSingleItem post={mockPost} setPost={mockSetPost} />);
 
   fireEvent.click(screen.getByRole(`button`, { name: "back" }));
-  expect(mockSetPost).toHaveBeenCalledWith(undefined);
+  expect(mockSetPost).toHaveBeenCalledWith({ post: undefined });
 });

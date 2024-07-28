@@ -26,9 +26,10 @@ afterEach(() => {
 
 const renderPostList = () => {
   const initialState: PostsState = {
+    singlePost: undefined,
+    previousScrollPosition: 0,
     newHighlighted: {},
     numberOfRequests: 0,
-    singlePost: undefined,
     items: [],
     total: undefined,
     lastSkip: undefined,

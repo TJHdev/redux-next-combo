@@ -9,15 +9,7 @@ export default defineConfig({
       "@/": new URL("./", import.meta.url).pathname,
     },
     setupFiles: ["./vitest-setup.js"],
-
+    exclude: ["**/e2e/**", "**/node_modules/**"],
     isolate: true,
-    // isolate: true,
-
-    // poolOptions: {
-    //   threads: {
-    //     singleThread: true,
-    //   },
-    // },
-    // fileParallelism: false,
   },
 });

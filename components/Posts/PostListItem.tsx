@@ -8,26 +8,28 @@ export const PostListItem = ({
   highlighted,
 }: {
   post: Post;
-  setPost: (post?: Post) => void;
+  setPost: (post: { post?: Post; previousScrollPosition: number }) => void;
   highlighted: boolean;
 }) => {
   return (
     <div
-      onClick={() => setPost(post)}
+      onClick={() => {
+        setPost({ post, previousScrollPosition: window.scrollY });
+      }}
       className={twMerge(
-        "flex flex-wrap row bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 hover:transition-all hover:border-orange-500 cursor-pointer",
+        "flex flex-wrap row bg-gray-800 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-600 hover:transition-all hover:border-orange-500 cursor-pointer",
         highlighted
           ? "animate-[highlight_3s_ease-in-out] animation-iteration-count-1"
           : ""
       )}
     >
-      <div className="flex justify-start items-center gap-4 w-100 ">
+      <div className="flex justify-start items-center gap-4 w-100">
         <Image
           alt="User-image"
           src={`https://robohash.org/${post.userId}`}
           width={150}
           height={150}
-          className="border max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
+          className="border border-gray-600 max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
         />
         <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
           Robot {post.id}
@@ -36,7 +38,7 @@ export const PostListItem = ({
       <div className="flex justify-start items-center sm:gap-4 gap-0 w-100">
         <div className="min-w-[0px] sm:min-w-[150px]"></div>
         <div>
-          <p className="text-gray-600  overflow-hidden line-clamp-3">
+          <p className="text-gray-300 overflow-hidden line-clamp-3">
             {post.body}
           </p>
         </div>

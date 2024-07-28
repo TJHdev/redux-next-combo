@@ -3,7 +3,7 @@ import {
   setSinglePost,
   resetNewHighlighted,
 } from "@/reducer/postsSlice";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { PostListItem } from "./PostListItem";
 import { PostSingleItem } from "./PostSingleItem";
 import { useElementOnScreen } from "@/hooks/useElementOnScreen";
@@ -20,10 +20,9 @@ export const _PostList = () => {
     threshold: 1.0,
   });
 
-  const dispatch = useDispatch<AppDispatch>();
-
   const {
     singlePost,
+    previousScrollPosition,
     items: posts,
     status,
     error,
@@ -31,28 +30,53 @@ export const _PostList = () => {
     newHighlighted,
   } = useSelector((state: RootState) => state.posts);
 
-  const canFetchMore = !!posts.length && posts.length !== total;
+  const dispatch = useDispatch<AppDispatch>();
 
+  const canFetchMore = !!posts.length && posts.length <= (total ?? 0);
+
+  // resets posts state when navigating back to home from single post page
+  useEffect(() => {
+    return () => {
+      dispatch(setSinglePost({ post: undefined, previousScrollPosition: 0 }));
+    };
+  }, [dispatch]);
+
+  // restores previous scroll position
+  useEffect(() => {
+    if (!singlePost && previousScrollPosition) {
+      window.scrollTo({ top: previousScrollPosition });
+    }
+  }, [previousScrollPosition, singlePost]);
+
+  // initial API call
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchPosts("initial"));
     }
-  }, [status, dispatch]);
+  }, [dispatch, status]);
 
+  // handles infinite scrolling API call
   useEffect(() => {
     if (isVisible) {
       dispatch(fetchPosts("nextPage"));
     }
   }, [dispatch, isVisible]);
 
+  // delayed call to remove the highlighted state after the animation has completed
   useEffect(() => {
     setTimeout(() => {
       dispatch(resetNewHighlighted(newHighlighted));
     }, 5000);
-  }, [newHighlighted]);
+  }, [dispatch, newHighlighted]);
 
-  const setPost = (post: Post | undefined) => {
-    dispatch(setSinglePost(post));
+  const setPost = ({
+    post,
+    previousScrollPosition,
+  }: {
+    post?: Post;
+    previousScrollPosition?: number;
+  }) => {
+    dispatch(setSinglePost({ post, previousScrollPosition }));
   };
 
   if (status === "loading") {

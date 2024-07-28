@@ -5,9 +5,10 @@ import { type Post, type PostResponse, postsApi } from "@/service/posts";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface PostsState {
+  singlePost: Post | undefined;
+  previousScrollPosition: number;
   newHighlighted: Record<string, true>;
   numberOfRequests: number;
-  singlePost: Post | undefined;
   items: Post[];
   total: number | undefined;
   lastSkip: number | undefined;
@@ -33,8 +34,9 @@ export const getFetchPosts = () =>
         skip = Math.floor(Math.random() * (posts.total ?? 0)) + 1;
       }
 
+      // triggered when scrolling to the bottom of the page
       if (type === "nextPage") {
-        skip = posts.lastSkip ?? 0 + 20;
+        skip = posts.lastSkip ?? 20;
       }
 
       try {
@@ -46,7 +48,7 @@ export const getFetchPosts = () =>
           throw new Error("Server error");
         }
         let data = await response.json();
-        // mock incrementing IDs for new posts added to top
+        // mock incrementing IDs for "real time" messages
         if (type === "new") {
           const mockIdPosts = data.posts.map((post, index) => {
             return { ...post, id: (state.posts.items[0].id ?? 0) + index + 1 };
@@ -64,9 +66,10 @@ export const getFetchPosts = () =>
 export const fetchPosts = getFetchPosts();
 
 const initialState: PostsState = {
+  singlePost: undefined,
+  previousScrollPosition: 0,
   newHighlighted: {},
   numberOfRequests: 0,
-  singlePost: undefined,
   items: [],
   total: undefined,
   lastSkip: undefined,
@@ -78,8 +81,17 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    setSinglePost: (state, action: PayloadAction<Post | undefined>) => {
-      state.singlePost = action.payload;
+    setSinglePost: (
+      state,
+      action: PayloadAction<{
+        post: Post | undefined;
+        previousScrollPosition?: number;
+      }>
+    ) => {
+      state.singlePost = action.payload.post;
+      if (typeof action.payload.previousScrollPosition === "number") {
+        state.previousScrollPosition = action.payload.previousScrollPosition;
+      }
       state.newHighlighted = {};
     },
     resetNewHighlighted: (
