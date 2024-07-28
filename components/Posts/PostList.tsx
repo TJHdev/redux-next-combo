@@ -101,7 +101,7 @@ export const _PostList = () => {
 
   return (
     <div className="max-w-xl mx-auto mb-6 px-4 w-full">
-      <h1 className="text-3xl font-bold mb-2">Recent Posts</h1>
+      <h1 className="text-3xl font-bold mb-2 text-gray-200">Recent Posts</h1>
       <div className="gap-2">
         {posts.map((post) => (
           <PostListItem

@@ -17,7 +17,7 @@ export const PostSingleItem = ({
           className="cursor-pointer absolute top-2 left-2 text-orange-500 text-[30px] leading-tight w-[40px] px-2"
         >{`<`}</button>
 
-        <div className="flex flex-col justify-center items-center gap-4 w-100 ">
+        <div className="flex flex-col justify-center items-center gap-4 w-100 text-gray-300">
           <Image
             alt="User image"
             src={`https://robohash.org/${post.userId}`}

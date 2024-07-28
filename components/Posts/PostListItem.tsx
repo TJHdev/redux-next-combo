@@ -31,7 +31,7 @@ export const PostListItem = ({
           height={150}
           className="border border-gray-600 max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
         />
-        <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
+        <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis text-gray-300">
           Robot {post.id}
         </h2>
       </div>
