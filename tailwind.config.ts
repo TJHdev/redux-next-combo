@@ -15,7 +15,6 @@ const config: Config = {
       },
       keyframes: {
         highlight: {
-          "0%, 50%": { backgroundColor: "transparent" },
           "25%": { backgroundColor: "orange" },
         },
       },

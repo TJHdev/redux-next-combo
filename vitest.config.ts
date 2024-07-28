@@ -5,5 +5,18 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    alias: {
+      "@/": new URL("./", import.meta.url).pathname,
+    },
+    setupFiles: ["./vitest-setup.js"],
+
+    // isolate: true,
+
+    // poolOptions: {
+    //   threads: {
+    //     singleThread: true,
+    //   },
+    // },
+    // fileParallelism: false,
   },
 });

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { type Post } from "@/reducer/postsSlice";
+import { type Post } from "@/service/posts";
 import { twMerge } from "tailwind-merge";
 
 export const PostListItem = ({
@@ -14,7 +14,6 @@ export const PostListItem = ({
   return (
     <div
       onClick={() => setPost(post)}
-      key={post.id}
       className={twMerge(
         "flex flex-wrap row bg-gray-200 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-400 hover:transition-all hover:border-orange-500 cursor-pointer",
         highlighted
@@ -31,7 +30,7 @@ export const PostListItem = ({
           className="border max-h-[70px] max-w-[70px] sm:max-h-[150px] sm:max-w-[150px]"
         />
         <h2 className="text-lg font-bold overflow-hidden line-clamp-3 ellipsis">
-          {post.id}
+          Robot {post.id}
         </h2>
       </div>
       <div className="flex justify-start items-center sm:gap-4 gap-0 w-100">

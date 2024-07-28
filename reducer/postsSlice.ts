@@ -1,28 +1,10 @@
 import { RootState } from "@/components/PostList";
 import { haveSameKeys } from "@/helpers/haveSameKeys";
+import { type Post, type PostResponse, postsApi } from "@/service/posts";
 
-import {
-  createSlice,
-  createAsyncThunk,
-  PayloadAction,
-  Action,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
-export interface Post {
-  id: number;
-  title: string;
-  body: string;
-  tags: string[];
-  reactions: {
-    likes: number;
-    dislikes: number;
-  };
-  views: number;
-  userId: number;
-  new?: true;
-}
-
-interface PostsState {
+export interface PostsState {
   newHighlighted: Record<string, true>;
   numberOfRequests: number;
   singlePost: Post | undefined;
@@ -33,49 +15,53 @@ interface PostsState {
   error: string | null;
 }
 
-interface PostResponse {
-  posts: Post[];
-  limit: number;
-  skip: number;
-  total: number;
-}
-
 type ReqType = "initial" | "nextPage" | "new";
 
-export const fetchPosts = createAsyncThunk<
-  PostResponse,
-  ReqType,
-  { rejectValue: string }
->("posts/fetchPosts", async (type, { rejectWithValue, getState }) => {
-  const state = getState() as RootState;
-  const { posts } = state;
+export const getFetchPosts = () =>
+  createAsyncThunk<PostResponse, ReqType, { rejectValue: string }>(
+    "posts/fetchPosts",
+    async (type, { rejectWithValue, getState }) => {
+      const state = getState() as RootState;
+      const { posts } = state;
 
-  let limit = 20;
-  let skip = 0;
-  if (type === "new") {
-    limit = 1;
-    skip = Math.floor(Math.random() * (posts.total ?? 0)) + 1;
-  }
+      let limit = 20;
+      let skip = 0;
 
-  if (type === "nextPage") {
-    skip = posts.lastSkip ?? 0 + 20;
-  }
+      // the "new" action type is to simulate an websocket connection passing in new posts in the interests of brevity.
+      if (type === "new") {
+        limit = 1;
+        skip = Math.floor(Math.random() * (posts.total ?? 0)) + 1;
+      }
 
-  try {
-    // const response = await fetch(`https://dummyjson.com/posts?limit=${limit}&skip=${skip}&sortBy=id&order=desc&delay=2000`);
-    const response = await fetch(
-      `https://dummyjson.com/posts?limit=${limit}&skip=${skip}&sortBy=id&order=desc&delay=1000`
-    );
+      if (type === "nextPage") {
+        skip = posts.lastSkip ?? 0 + 20;
+      }
 
-    if (!response.ok) {
-      throw new Error("Server error");
+      try {
+        const response = await postsApi.getPosts({ limit, skip });
+
+        const state = getState() as RootState;
+
+        if (!response.ok) {
+          throw new Error("Server error");
+        }
+        let data = await response.json();
+        // mock incrementing IDs for new posts added to top
+        if (type === "new") {
+          const mockIdPosts = data.posts.map((post, index) => {
+            return { ...post, id: (state.posts.items[0].id ?? 0) + index + 1 };
+          });
+
+          data = { ...data, posts: mockIdPosts };
+        }
+        return data;
+      } catch (error) {
+        return rejectWithValue("Failed to fetch posts.");
+      }
     }
-    const data: PostResponse = await response.json();
-    return data;
-  } catch (error) {
-    return rejectWithValue("Failed to fetch posts.");
-  }
-});
+  );
+
+export const fetchPosts = getFetchPosts();
 
 const initialState: PostsState = {
   newHighlighted: {},
@@ -113,6 +99,7 @@ const postsSlice = createSlice({
         if (type === "initial") {
           state.status = "loading";
         } else if (type === "nextPage") {
+          // allows positioning of loading spinner at bottom of page for infinite scroll
           state.status = "fetching";
         }
         state.numberOfRequests++;
