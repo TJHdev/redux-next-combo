@@ -24,13 +24,3 @@ test("renders the component with correct content", () => {
   expect(screen.getByText(`Robot ${mockPost.id}`)).toBeInTheDocument();
   expect(screen.getByText(mockPost.body)).toBeInTheDocument();
 });
-
-test("calls setPost function when clicked", () => {
-  render(<PostListItem post={mockPost} highlighted={false} />);
-
-  fireEvent.click(screen.getByText(`Robot ${mockPost.id}`));
-  expect(mockSetPost).toHaveBeenCalledWith({
-    post: mockPost,
-    previousScrollPosition: 0,
-  });
-});

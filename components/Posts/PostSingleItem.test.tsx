@@ -19,15 +19,8 @@ const mockPost: Post = {
 const mockSetPost = vi.fn();
 
 test("renders the component with correct content", () => {
-  render(<PostSingleItem post={mockPost} setPost={mockSetPost} />);
+  render(<PostSingleItem post={mockPost} />);
 
   expect(screen.getByText(`Robot ${mockPost.id}`)).toBeInTheDocument();
   expect(screen.getByText(mockPost.body)).toBeInTheDocument();
-});
-
-test("calls setPost function when clicked", () => {
-  render(<PostSingleItem post={mockPost} setPost={mockSetPost} />);
-
-  fireEvent.click(screen.getByRole(`button`, { name: "back" }));
-  expect(mockSetPost).toHaveBeenCalledWith({ post: undefined });
 });

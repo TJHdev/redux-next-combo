@@ -1,7 +1,6 @@
 import { describe, test, expect, vi } from "vitest";
 import postsReducer, {
   fetchPosts,
-  setSinglePost,
   resetNewHighlighted,
   PostsState,
 } from "@/reducer/postsSlice";
@@ -9,8 +8,6 @@ import { type Post } from "@/service/posts";
 import { configureStore } from "@reduxjs/toolkit";
 
 const initialState: PostsState = {
-  singlePost: undefined,
-  previousScrollPosition: 0,
   newHighlighted: {},
   numberOfRequests: 0,
   items: [],
@@ -22,24 +19,6 @@ const initialState: PostsState = {
 
 test("should handle initial state", () => {
   expect(postsReducer(undefined, { type: "unknown" })).toEqual(initialState);
-});
-
-test("should handle setSinglePost", () => {
-  const samplePost: Post = {
-    id: 1,
-    title: "Test Post",
-    body: "This is a test post",
-    tags: ["test"],
-    reactions: { likes: 0, dislikes: 0 },
-    views: 0,
-    userId: 1,
-  };
-  const actual = postsReducer(
-    initialState,
-    setSinglePost({ post: samplePost, previousScrollPosition: 0 })
-  );
-  expect(actual.singlePost).toEqual(samplePost);
-  expect(actual.newHighlighted).toEqual({});
 });
 
 test("should handle resetNewHighlighted", () => {
