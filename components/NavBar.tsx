@@ -22,7 +22,7 @@ export const NavBar = () => {
           href="/posts"
           className={twMerge(
             "text-white hover:text-gray-400 transition duration-300 ease-in-out pointer",
-            activePage === "/posts" ? "text-orange-500" : ""
+            activePage.includes("/posts") ? "text-orange-500" : ""
           )}
         >
           Feed

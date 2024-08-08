@@ -1,21 +1,17 @@
 import { type Post } from "@/service/posts";
 import Image from "next/image";
+import Link from "next/link";
 
-export const PostSingleItem = ({
-  post,
-  setPost,
-}: {
-  post: Post;
-  setPost: (arg: { post?: Post; previousScrollPosition?: number }) => void;
-}) => {
+export const PostSingleItem = ({ post }: { post: Post }) => {
   return (
     <div className="max-w-xl mx-auto mb-6 px-4 w-full">
       <div className="relative bg-gray-800 p-4 rounded shadow-md mb-4 gap-4 border-2 border-gray-600 px-4">
-        <button
-          aria-label="back"
-          onClick={() => setPost({ post: undefined })}
-          className="cursor-pointer absolute top-2 left-2 text-orange-500 text-[30px] leading-tight w-[40px] px-2"
-        >{`<`}</button>
+        <Link href="/posts">
+          <button
+            aria-label="back"
+            className="cursor-pointer absolute top-2 left-2 text-orange-500 text-[30px] leading-tight w-[40px] px-2"
+          >{`<`}</button>
+        </Link>
 
         <div className="flex flex-col justify-center items-center gap-4 w-100 text-gray-300">
           <Image

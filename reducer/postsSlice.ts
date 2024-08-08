@@ -5,8 +5,6 @@ import { type Post, type PostResponse, postsApi } from "@/service/posts";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface PostsState {
-  singlePost: Post | undefined;
-  previousScrollPosition: number;
   newHighlighted: Record<string, true>;
   numberOfRequests: number;
   items: Post[];
@@ -66,8 +64,6 @@ export const getFetchPosts = () =>
 export const fetchPosts = getFetchPosts();
 
 const initialState: PostsState = {
-  singlePost: undefined,
-  previousScrollPosition: 0,
   newHighlighted: {},
   numberOfRequests: 0,
   items: [],
@@ -81,19 +77,6 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    setSinglePost: (
-      state,
-      action: PayloadAction<{
-        post: Post | undefined;
-        previousScrollPosition?: number;
-      }>
-    ) => {
-      state.singlePost = action.payload.post;
-      if (typeof action.payload.previousScrollPosition === "number") {
-        state.previousScrollPosition = action.payload.previousScrollPosition;
-      }
-      state.newHighlighted = {};
-    },
     resetNewHighlighted: (
       state,
       action: PayloadAction<Record<string, true>>
@@ -163,5 +146,5 @@ const postsSlice = createSlice({
   },
 });
 
-export const { setSinglePost, resetNewHighlighted } = postsSlice.actions;
+export const { resetNewHighlighted } = postsSlice.actions;
 export default postsSlice.reducer;

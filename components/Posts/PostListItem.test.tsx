@@ -19,18 +19,14 @@ const mockPost: Post = {
 const mockSetPost = vi.fn();
 
 test("renders the component with correct content", () => {
-  render(
-    <PostListItem post={mockPost} setPost={mockSetPost} highlighted={false} />
-  );
+  render(<PostListItem post={mockPost} highlighted={false} />);
 
   expect(screen.getByText(`Robot ${mockPost.id}`)).toBeInTheDocument();
   expect(screen.getByText(mockPost.body)).toBeInTheDocument();
 });
 
 test("calls setPost function when clicked", () => {
-  render(
-    <PostListItem post={mockPost} setPost={mockSetPost} highlighted={false} />
-  );
+  render(<PostListItem post={mockPost} highlighted={false} />);
 
   fireEvent.click(screen.getByText(`Robot ${mockPost.id}`));
   expect(mockSetPost).toHaveBeenCalledWith({

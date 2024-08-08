@@ -1,15 +1,9 @@
-import {
-  fetchPosts,
-  setSinglePost,
-  resetNewHighlighted,
-} from "@/reducer/postsSlice";
-import { useEffect, useLayoutEffect } from "react";
+import { fetchPosts, resetNewHighlighted } from "@/reducer/postsSlice";
+import { useEffect } from "react";
 import { PostListItem } from "./PostListItem";
-import { PostSingleItem } from "./PostSingleItem";
 import { useElementOnScreen } from "@/hooks/useElementOnScreen";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { configureStore } from "@reduxjs/toolkit";
-import { type Post } from "@/service/posts";
 import postsReducer from "@/reducer/postsSlice";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
@@ -21,8 +15,6 @@ export const _PostList = () => {
   });
 
   const {
-    singlePost,
-    previousScrollPosition,
     items: posts,
     status,
     error,
@@ -33,20 +25,6 @@ export const _PostList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const canFetchMore = !!posts.length && posts.length <= (total ?? 0);
-
-  // resets posts state when navigating back to home from single post page
-  useEffect(() => {
-    return () => {
-      dispatch(setSinglePost({ post: undefined, previousScrollPosition: 0 }));
-    };
-  }, [dispatch]);
-
-  // restores previous scroll position
-  useEffect(() => {
-    if (!singlePost && previousScrollPosition) {
-      window.scrollTo({ top: previousScrollPosition });
-    }
-  }, [previousScrollPosition, singlePost]);
 
   // initial API call
   useEffect(() => {
@@ -69,16 +47,6 @@ export const _PostList = () => {
     }, 5000);
   }, [dispatch, newHighlighted]);
 
-  const setPost = ({
-    post,
-    previousScrollPosition,
-  }: {
-    post?: Post;
-    previousScrollPosition?: number;
-  }) => {
-    dispatch(setSinglePost({ post, previousScrollPosition }));
-  };
-
   if (status === "loading") {
     return (
       <div className="absolute left-0 top-0 h-full w-full flex justify-center items-center h-screen mx-auto">
@@ -95,10 +63,6 @@ export const _PostList = () => {
     );
   }
 
-  if (singlePost) {
-    return <PostSingleItem post={singlePost} setPost={setPost} />;
-  }
-
   return (
     <div className="max-w-xl mx-auto mb-6 px-4 w-full">
       <h1 className="text-3xl font-bold mb-2 text-gray-200">Recent Posts</h1>
@@ -108,7 +72,6 @@ export const _PostList = () => {
             key={post.id}
             highlighted={newHighlighted[post.id]}
             post={post}
-            setPost={setPost}
           />
         ))}
         {canFetchMore && (

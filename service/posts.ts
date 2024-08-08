@@ -29,4 +29,12 @@ const getPosts = async ({
   );
 };
 
-export const postsApi = { getPosts };
+const getPost = async ({
+  id,
+}: {
+  id: string;
+}): Promise<{ ok: boolean; json: () => Promise<Post> }> => {
+  return await fetch(`https://dummyjson.com/posts/${id}`);
+};
+
+export const postsApi = { getPosts, getPost };
